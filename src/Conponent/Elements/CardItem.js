@@ -22,9 +22,10 @@ export default class CardItem extends Component {
       img,
       phone,
       tittle,
-      isAdd = false
+      isAdd = false,
+      onPress = () => { }
     } = this.props
-    return isAdd ? <TouchableOpacity style={[style.cardBody, { padding: 54 }]}>
+    return isAdd ? <TouchableOpacity style={[style.cardBody, { padding: 54 }]} onPress={onPress}>
       <Image source={Img.iconAdd} />
     </TouchableOpacity> :
       <View style={style.cardBody} >
