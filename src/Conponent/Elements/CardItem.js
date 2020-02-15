@@ -7,9 +7,10 @@ import {
   TouchableOpacity
 } from 'react-native'
 import { ScaledSheet } from 'react-native-size-matters'
+import call from 'react-native-phone-call'
 import Img from '../../commons/images'
 
-const widthCard = (Dimensions.get('window').width / 2) - 50
+const widthCard = ((Dimensions.get('window').width - 65) / 2)
 
 export default class CardItem extends Component {
   constructor(props) {
@@ -17,26 +18,48 @@ export default class CardItem extends Component {
 
   }
 
+  phoneCall(phoneCall) {
+    const args = {
+      number: phoneCall,
+      prompt: false
+    }
+
+    call(args).catch(console.error)
+  }
+
+  playSound(soundmp3) {
+    this.props.onPlaySound(soundmp3)
+  }
+
+
   render() {
     const {
       img,
       phone,
       tittle,
       isAdd = false,
-      onPress = () => { }
+      onPress = () => { },
+      sound,
+      propStyle
     } = this.props
-    return isAdd ? <TouchableOpacity style={[style.cardBody, { padding: 54 }]} onPress={onPress}>
+    return isAdd ? <TouchableOpacity style={[style.cardBody, { padding: 54 }, propStyle]} onPress={onPress}>
       <Image source={Img.iconAdd} />
     </TouchableOpacity> :
-      <View style={style.cardBody} >
-        <Image style={style.image} source={img} />
+      <View style={[style.cardBody, propStyle]} >
+        <Image style={style.image} source={img ? img : Img.imgTest} />
         <Text style={style.tittle}>{tittle}</Text>
         <Text style={style.subTittle}>{`Phone ${phone}`}</Text>
         <View style={style.viewButton}>
-          <TouchableOpacity style={[style.button, { alignSelf: 'flex-start' }]}>
+          <TouchableOpacity
+            style={[style.button, { alignSelf: 'flex-start' }]}
+            onPress={() => this.phoneCall(phone)}
+          >
             <Image source={Img.iconCall} />
           </TouchableOpacity>
-          <TouchableOpacity style={[style.button, { alignSelf: 'flex-end' }]}>
+          <TouchableOpacity
+            style={[style.button, { alignSelf: 'flex-end' }]}
+            onPress={() => this.playSound(sound)}
+          >
             <Image source={Img.iconVolum} />
           </TouchableOpacity>
         </View>
@@ -46,9 +69,8 @@ export default class CardItem extends Component {
 
 const style = ScaledSheet.create({
   cardBody: {
-    marginLeft: 15,
     marginTop: 15,
-    width: `${widthCard}@s`,
+    width: `${widthCard}@ms`,
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: 'black',

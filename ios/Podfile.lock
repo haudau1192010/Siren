@@ -184,6 +184,8 @@ PODS:
   - React-jsinspector (0.61.5)
   - react-native-image-picker (2.3.0):
     - React
+  - react-native-mail (4.1.0):
+    - React
   - react-native-safe-area-context (0.7.2):
     - React
   - React-RCTActionSheet (0.61.5):
@@ -229,6 +231,11 @@ PODS:
     - React
   - RNScreens (2.0.0-beta.2):
     - React
+  - RNSound (0.11.0):
+    - React
+    - RNSound/Core (= 0.11.0)
+  - RNSound/Core (0.11.0):
+    - React
   - RNVectorIcons (6.6.0):
     - React
   - Yoga (1.14.0)
@@ -251,6 +258,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - react-native-mail (from `../node_modules/react-native-mail`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -267,6 +275,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler/RNGestureHandler.podspec`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSound (from `../node_modules/react-native-sound`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -305,6 +314,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-mail:
+    :path: "../node_modules/react-native-mail"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-RCTActionSheet:
@@ -335,6 +346,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSound:
+    :path: "../node_modules/react-native-sound"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
@@ -357,6 +370,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
   react-native-image-picker: e0b118c84e76f590a9d918baf06b0b043cbc5212
+  react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-safe-area-context: d227bd5ef6776683c330f44187351dc138b2a4cb
   React-RCTActionSheet: 600b4d10e3aea0913b5a92256d2719c0cdd26d76
   React-RCTAnimation: 791a87558389c80908ed06cc5dfc5e7920dfa360
@@ -372,9 +386,10 @@ SPEC CHECKSUMS:
   RNGestureHandler: 911d3b110a7a233a34c4f800e7188a84b75319c6
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 5e4758109c6d35f9a009ce72af873df907548020
+  RNSound: c980916b596cc15c8dcd2f6ecd3b13c4881dbe20
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: 9ba8bee8f16957eb56603ca420229d286bbdc47e
+PODFILE CHECKSUM: 5ab60c8c6901d7a14074761e26f4ba3e3ea0d135
 
 COCOAPODS: 1.7.3

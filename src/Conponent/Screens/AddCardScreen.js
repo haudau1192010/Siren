@@ -7,6 +7,7 @@ import {
   Text
 } from 'react-native'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Fumi } from 'react-native-textinput-effects';
 import { ScaledSheet } from 'react-native-size-matters'
 import ImagePicker from 'react-native-image-picker'
@@ -16,16 +17,16 @@ export default class AddCardScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: null,
-      phone: null,
-      avatar: null
+      name: "",
+      phone: "",
+      avatar: null,
+      isShowTxtErr: false
     }
   }
 
   showImagePicker() {
     const options = {
       title: 'Select Avatar',
-      customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -54,65 +55,81 @@ export default class AddCardScreen extends Component {
     });
   }
 
+  onBtnSave() {
+
+    if (this.state.name.trim() && this.state.phone.trim()) {
+      this.props.route.params.returnError(this.state.name, this.state.phone, this.state.avatar)
+      this.props.navigation.goBack()
+    } else {
+      this.setState({ isShowTxtErr: true })
+    }
+  }
+
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <TouchableOpacity
-            style={style.btnBack}
-            onPress={() => {
-              this.props.navigation.goBack()
-            }}
-          >
-            <Image source={Img.iconBack} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={style.btnSave}
-            onPress={() => {
-              this.props.route.params.returnError(this.state.name, this.state.phone, this.state.avatar)
-              this.props.navigation.goBack()
-            }}
-          >
-            <Text style={style.textSave}>Save</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={style.viewAvatar}>
-          <Image source={Img.iconBgAvatar} />
-          <View style={style.viewInAvatar}>
-            <Image style={style.avatar} resizeMode="stretch" source={this.state.avatar ? this.state.avatar : Img.imgTest} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <KeyboardAwareScrollView
+          style={{ flex: 1, backgroundColor: 'transparent' }}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          scrollEnabled={false}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
-              style={style.pen}
-              onPress={() => this.showImagePicker()}
+              style={style.btnBack}
+              onPress={() => {
+                this.props.navigation.goBack()
+              }}
             >
-              <Image source={Img.iconPen} />
+              <Image source={Img.iconBack} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={style.btnSave}
+              onPress={() => this.onBtnSave()}
+            >
+              <Text style={style.textSave}>Save</Text>
             </TouchableOpacity>
           </View>
-        </View>
-        <Fumi
-          value={this.state.name}
-          style={{ marginTop: 30 }}
-          label={'Name'}
-          iconClass={FontAwesomeIcon}
-          iconName={'edit'}
-          iconColor={'#f95a25'}
-          iconSize={24}
-          iconWidth={40}
-          inputPadding={16}
-          onChangeText={(text) => { this.setState({ name: text }) }}
-        />
-        <Fumi
-          value={this.state.phone}
-          style={{ marginTop: 30 }}
-          label={'Phone'}
-          iconClass={FontAwesomeIcon}
-          iconName={'phone'}
-          iconColor={'#f95a25'}
-          iconSize={24}
-          iconWidth={40}
-          inputPadding={16}
-          onChangeText={(text) => { this.setState({ phone: text }) }}
-          inputStyle={{ keyboardType: 'numeric' }}
-        />
+          <View style={style.viewAvatar}>
+            <Image source={Img.iconBgAvatar} />
+            <View style={style.viewInAvatar}>
+              <Image style={style.avatar} resizeMode="stretch" source={this.state.avatar ? this.state.avatar : Img.imgTest} />
+              <TouchableOpacity
+                style={style.pen}
+                onPress={() => this.showImagePicker()}
+              >
+                <Image source={Img.iconPen} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Fumi
+            value={this.state.name}
+            style={{ marginTop: 30 }}
+            label={'Name'}
+            iconClass={FontAwesomeIcon}
+            iconName={'edit'}
+            iconColor={'#f95a25'}
+            iconSize={24}
+            iconWidth={40}
+            inputPadding={16}
+            onChangeText={(text) => { this.setState({ name: text }) }}
+          />
+          <Fumi
+            value={this.state.phone}
+            style={{ marginTop: 30, marginBottom: 10 }}
+            label={'Phone'}
+            iconClass={FontAwesomeIcon}
+            iconName={'phone'}
+            iconColor={'#f95a25'}
+            iconSize={24}
+            iconWidth={40}
+            inputPadding={16}
+            onChangeText={(text) => { this.setState({ phone: text }) }}
+            isNumberic={true}
+          />
+          {this.state.isShowTxtErr && <Text style={style.textErr}>
+            *Name or Phone is not null
+          </Text>}
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     )
   }
@@ -132,6 +149,7 @@ const style = ScaledSheet.create({
     alignItems: 'center',
   },
   pen: {
+    backgroundColor: 'white',
     position: 'absolute',
     right: "2@ms",
     bottom: "2@ms",
@@ -160,5 +178,12 @@ const style = ScaledSheet.create({
     fontSize: "14@ms0.3",
     fontFamily: 'OpenSans-Bold',
     color: "#0098FF"
+  },
+  textErr: {
+    marginTop: 10,
+    marginLeft: 35,
+    color: '#FF0000',
+    fontSize: "11@ms0.3",
+    fontFamily: 'OpenSans-Bold',
   }
 })

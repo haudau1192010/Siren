@@ -11,5 +11,6 @@ export default {
   iconBack: require('../Asset/Image/Orion_indicator-left.png'),
   iconBgAvatar: require('../Asset/Image/oval@3x.png'),
   iconPen: require('../Asset/Image/iconPen.png'),
-  imgTest: require('../Asset/Image/test.jpg')
+  imgTest: require('../Asset/Image/test.jpg'),
+  iconVolume: require('../Asset/Image/Orion_medium-volume.png')
 }

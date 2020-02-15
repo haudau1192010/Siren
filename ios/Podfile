@@ -37,6 +37,10 @@ pod 'RNGestureHandler', :podspec => '../node_modules/react-native-gesture-handle
 
   pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
+  pod 'RNSound', :path => '../node_modules/react-native-sound'
+
+  pod 'react-native-mail', :path => '../node_modules/react-native-mail'
+
   target 'sirenprojectproductionTests' do
     inherit! :search_paths
     # Pods for testing
