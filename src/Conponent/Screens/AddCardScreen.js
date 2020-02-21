@@ -33,6 +33,7 @@ export default class AddCardScreen extends Component {
       },
     };
 
+
     ImagePicker.showImagePicker(options, (response) => {
       console.log('Response = ', response);
 
@@ -56,15 +57,29 @@ export default class AddCardScreen extends Component {
   }
 
   onBtnSave() {
-
+    let index = 0
+    let isEdit = false
+    const pro = this.props.route.params
     if (this.state.name.trim() && this.state.phone.trim()) {
-      this.props.route.params.returnError(this.state.name, this.state.phone, this.state.avatar)
+
+      if (pro.isEdit && pro.id) {
+        index = pro.id
+        isEdit = pro.isEdit
+      }
+      pro.returnError(this.state.name, this.state.phone, this.state.avatar, index, isEdit)
       this.props.navigation.goBack()
     } else {
       this.setState({ isShowTxtErr: true })
     }
   }
 
+  componentDidMount() {
+    const rou = this.props.route.params
+    this.state.name = rou.name ? rou.name : ""
+    this.state.phone = rou.phone ? rou.name : ""
+    this.state.avatar = rou.img ? rou.img : ""
+    this.setState({ ...this.state.name, ...this.state.phone, ...this.state.avatar })
+  }
   render() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -73,7 +88,9 @@ export default class AddCardScreen extends Component {
           resetScrollToCoords={{ x: 0, y: 0 }}
           scrollEnabled={false}
         >
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}
+          >
             <TouchableOpacity
               style={style.btnBack}
               onPress={() => {
@@ -92,7 +109,11 @@ export default class AddCardScreen extends Component {
           <View style={style.viewAvatar}>
             <Image source={Img.iconBgAvatar} />
             <View style={style.viewInAvatar}>
-              <Image style={style.avatar} resizeMode="stretch" source={this.state.avatar ? this.state.avatar : Img.imgTest} />
+              <Image
+                style={style.avatar}
+                resizeMode="cover"
+                source={this.state.avatar ? this.state.avatar : Img.imgTest}
+              />
               <TouchableOpacity
                 style={style.pen}
                 onPress={() => this.showImagePicker()}

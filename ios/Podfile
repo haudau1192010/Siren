@@ -41,6 +41,8 @@ pod 'RNGestureHandler', :podspec => '../node_modules/react-native-gesture-handle
 
   pod 'react-native-mail', :path => '../node_modules/react-native-mail'
 
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
   target 'sirenprojectproductionTests' do
     inherit! :search_paths
     # Pods for testing

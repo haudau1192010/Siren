@@ -6,7 +6,8 @@ import {
   SafeAreaView,
   AsyncStorage,
   Dimensions,
-  Image
+  Image,
+  TouchableOpacity
 } from 'react-native'
 import Modal from "react-native-modal"
 import Mailer from 'react-native-mail'
@@ -26,21 +27,28 @@ const a = [
     img: Img.iconPolice,
     tittle: 'Police',
     phone: "113",
-    sound: Media.PoliceSirenSound
+    sound: Media.PoliceSirenSound,
+    isPlaymp3: false
   },
   {
     img: Img.iconAmbumlance,
     tittle: 'Ambulance',
     phone: "114",
-    sound: Media.AmbulanceSirenSound
+    sound: Media.AmbulanceSirenSound,
+    isPlaymp3: false
   },
   {
     img: Img.iconFire,
     tittle: 'Fire',
     phone: "115",
-    sound: Media.FireSirenSound
+    sound: Media.FireSirenSound,
+    isPlaymp3: false
   }
 ]
+
+let idx = 0
+
+let sound = null
 
 
 export default class HomeScreen extends Component {
@@ -49,6 +57,8 @@ export default class HomeScreen extends Component {
     this.state = {
       data: [],
       isModalVisible: false,
+      isModalRateVisible: false,
+      isModalRemoveVisible: false,
       value: 1
     }
   }
@@ -57,27 +67,53 @@ export default class HomeScreen extends Component {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
 
-  async returnError(name, phone, avatar) {
-    this.state.data.push({
-      img: avatar,
-      tittle: name,
-      phone: phone
-    })
+  toggleModalRate = () => {
+    this.setState({ isModalRateVisible: !this.state.isModalRateVisible });
+  };
+
+  toggleModalRemoveRate = () => {
+    this.setState({ isModalRemoveVisible: !this.state.isModalRemoveVisible });
+  };
+
+  async returnError(name, phone, avatar, id, isEdit) {
+    if (isEdit) {
+      this.state.data[id].img = avatar
+      this.state.data[id].tittle = name
+      this.state.data[id].phone = phone
+    } else {
+      this.state.data.push({
+        img: avatar,
+        tittle: name,
+        phone: phone,
+        isPlaymp3: false
+      })
+    }
     await AsyncStorage.setItem("ListItem", JSON.stringify(this.state.data)).then(() => {
       this.setState({ ...this.state.data })
     })
   }
 
-  playSound(soundmp3) {
-    Sound.setCategory('Playback');
+  playSound(soundmp3, index) {
+    if (sound) {
+      sound.stop()
+    }
+    sound = new Sound(soundmp3, Sound.MAIN_BUNDLE, (error) => {
 
-    const sound = new Sound(soundmp3, Sound.MAIN_BUNDLE, (error) => {
       if (error) {
         console.log(error)
       }
       sound.setVolume(this.state.value)
+      console.log(index)
+      this.state.data.map((i) => i.isPlaymp3 = false)
+      this.state.data[index].isPlaymp3 = true
+      this.setState({ ...this.state.data })
       sound.play()
     })
+  }
+
+  onRemove(i) {
+    idx = i
+    this.setState({ isModalRemoveVisible: true })
   }
 
   async handleVolume() {
@@ -87,11 +123,11 @@ export default class HomeScreen extends Component {
 
   handleEmail() {
     Mailer.mail({
-      subject: 'need help',
-      recipients: ['support@example.com'],
-      ccRecipients: ['supportCC@example.com'],
-      bccRecipients: ['supportBCC@example.com'],
-      body: '<b>A Bold Body</b>',
+      subject: 'Need help',
+      recipients: ['werewolf.contacts@gmail.com'],
+      ccRecipients: ['werewolf.contacts@gmail.com'],
+      bccRecipients: ['werewolf.contacts@gmail.com'],
+      body: 'Hi. ',
       isHTML: true,
       attachment: {
         path: '',  // The absolute path of the file from which to read data.
@@ -126,6 +162,9 @@ export default class HomeScreen extends Component {
   }
 
   render() {
+
+    const nav = this.props.navigation
+
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <Modal
@@ -153,9 +192,96 @@ export default class HomeScreen extends Component {
             </Text>
           </View>
         </Modal>
+
+        <Modal
+          isVisible={this.state.isModalRemoveVisible}
+          onBackdropPress={async () => {
+            this.setState({ isModalRemoveVisible: false })
+          }}
+        >
+          <View style={[style.modalView,
+          { paddingVertical: 0, borderRadius: 15, flexDirection: 'column' }]}>
+            <Image style={{ marginTop: 20 }} source={Img.iconBin} />
+            <Text style={style.tittleRate}>
+              Delete Contact
+            </Text>
+            <Text style={style.subTittleRate}>
+              Delete a contact will permanently remove it from  your list contact
+            </Text>
+            <View style={style.viewBtnRate}>
+              <TouchableOpacity
+                style={style.buttonRateLater}
+                onPress={() => this.toggleModalRemoveRate()}>
+                <Text
+                  style={style.textRateBottom}
+                >
+                  No
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[style.buttonRateLater, {
+                  backgroundColor: '#0098FF', borderWidth: 0, marginLeft: 40, paddingHorizontal: 35
+                }]}
+                onPress={async () => {
+                  this.state.data.splice(idx, 1)
+                  await AsyncStorage.setItem("ListItem", JSON.stringify(this.state.data)).then(() => {
+                    this.setState({ ...this.state.data, isModalRemoveVisible: false })
+                  })
+                }}
+              >
+                <Text style={[style.textRateBottom,
+                {
+                  color: 'white', fontFamily: 'OpenSans-Bold'
+                }]}>
+                  Yes
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          isVisible={this.state.isModalRateVisible}
+          onBackdropPress={async () => {
+            this.setState({ isModalRateVisible: false })
+          }}
+        >
+          <View style={[style.modalView,
+          { paddingVertical: 0, borderRadius: 15, flexDirection: 'column' }]}>
+            <Image style={{ marginTop: 20 }} source={Img.iconPopupRate} />
+            <Text style={style.tittleRate}>
+              Like using Siren App?
+            </Text>
+            <Text style={style.subTittleRate}>
+              Recommend us to others by rating us on Google Play
+            </Text>
+            <View style={style.viewBtnRate}>
+              <TouchableOpacity
+                style={style.buttonRateLater}
+                onPress={() => this.toggleModalRate()}>
+                <Text
+                  style={style.textRateBottom}
+                >
+                  Later
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[style.buttonRateLater, {
+                backgroundColor: '#0098FF', borderWidth: 0, marginLeft: 40, paddingHorizontal: 35
+              }]}>
+                <Text style={[style.textRateBottom,
+                {
+                  color: 'white', fontFamily: 'OpenSans-Bold'
+                }]}>
+                  Submit
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
         <View style={style.topView}>
           <BtnTopItem img={Img.iconComment} onPress={this.handleEmail} />
-          <BtnTopItem img={Img.iconStar} />
+          <BtnTopItem img={Img.iconStar} onPress={this.toggleModalRate} />
           <BtnTopItem img={Img.iconSetting} onPress={this.toggleModal} />
         </View>
         <ScrollView
@@ -168,17 +294,32 @@ export default class HomeScreen extends Component {
               this.state.data.map((a, i) => {
                 return [<CardItem
                   key={i} {...a}
-                  onPlaySound={(soundmp3) => this.playSound(soundmp3)}
+                  onPlaySound={(soundmp3, id) => this.playSound(soundmp3, id)}
                   propStyle={{
-                    marginLeft: (i + 1) % 2 == 0 ? 15 : null,
+                    marginLeft: (i + 1) % 2 == 0 ? 15 : 0,
                     marginTop: i == 0 || i == 1 ? 0 : 15
+                  }}
+                  isShowBtnClose={i > 2 ? true : false}
+                  index={i}
+                  onPressClose={(i) => this.onRemove(i)}
+                  onPressMute={(index) => {
+                    if (sound) {
+                      sound.stop()
+                      this.state.data[index].isPlaymp3 = false
+                      this.setState({ ...this.state.data })
+                    }
+                  }}
+                  onPressEdit={(id, phone, name, img) => {
+                    nav.navigate("AddCard", {
+                      id: id, phone: phone, name: name, img: img, isEdit: true, returnError: this.returnError.bind(this)
+                    })
                   }}
                 />,
                 i == this.state.data.length - 1 ? [<CardItem
                   propStyle={(i + 2) % 2 == 0 ? { marginLeft: 15, } : null}
                   key={i + 1}
                   isAdd={true}
-                  onPress={() => this.props.navigation.navigate("AddCard", { returnError: this.returnError.bind(this) })}
+                  onPress={() => nav.navigate("AddCard", { returnError: this.returnError.bind(this) })}
                 />, <View style={{ width: widthCard + 15 }} />] : null]
               })
             }
@@ -210,12 +351,45 @@ const style = ScaledSheet.create({
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 30
   },
   textValue: {
     fontSize: '16@ms0.3',
     fontFamily: 'OpenSans-Bold',
     color: 'black',
     marginRight: 15
+  },
+  tittleRate: {
+    marginTop: 18,
+    fontSize: '20@ms0.3',
+    color: '#0098FF',
+    fontFamily: 'OpenSans-Bold'
+  },
+  subTittleRate: {
+    marginTop: 20,
+    fontSize: '12@ms0.3',
+    color: '#8E8E8E',
+    textAlign: 'center',
+    paddingHorizontal: 40,
+    fontFamily: 'OpenSans-Semibold'
+  },
+  viewBtnRate: {
+    paddingHorizontal: 20,
+    flexDirection: 'row', marginTop: 30
+  },
+  buttonRateLater: {
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#D5D5D5',
+    borderRadius: 10
+  },
+  textRateBottom: {
+    fontSize: '16@ms0.3',
+    color: '#606060',
+    fontFamily: 'OpenSans-Regular',
   }
 })

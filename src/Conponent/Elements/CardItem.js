@@ -4,10 +4,12 @@ import {
   Text,
   View,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  Clipboard
 } from 'react-native'
 import { ScaledSheet } from 'react-native-size-matters'
 import call from 'react-native-phone-call'
+import Toast, { DURATION } from 'react-native-easy-toast'
 import Img from '../../commons/images'
 
 const widthCard = ((Dimensions.get('window').width - 65) / 2)
@@ -27,8 +29,23 @@ export default class CardItem extends Component {
     call(args).catch(console.error)
   }
 
-  playSound(soundmp3) {
-    this.props.onPlaySound(soundmp3)
+  playSound(soundmp3, index) {
+    this.props.onPlaySound(soundmp3, index)
+  }
+
+  toastText(phone) {
+    Clipboard.setString(phone);
+    this.refs.toast.show('Phone number has been saved', 500, () => {
+      // something you want to do at close
+    });
+  }
+
+  onPressBtnVolume(sound, isPlaymp3, isShowBtnClose, id, phone, tittle, img) {
+    if (!isPlaymp3)
+      isShowBtnClose ? this.props.onPressEdit(id, phone, tittle, img) : this.playSound(sound, id)
+    else {
+      this.props.onPressMute(id)
+    }
   }
 
 
@@ -40,15 +57,40 @@ export default class CardItem extends Component {
       isAdd = false,
       onPress = () => { },
       sound,
-      propStyle
+      isPlaymp3 = false,
+      propStyle,
+      isShowBtnClose = false,
+      index
     } = this.props
-    return isAdd ? <TouchableOpacity style={[style.cardBody, { padding: 54 }, propStyle]} onPress={onPress}>
+    const pen = isShowBtnClose ? Img.iconPenYellow : Img.iconVolum
+    const imageVolume = !isPlaymp3 ? pen : Img.iconVolumeMute
+    return isAdd ? <TouchableOpacity
+      style={[style.cardBody, { padding: 54 }, propStyle]}
+      onPress={onPress}>
       <Image source={Img.iconAdd} />
     </TouchableOpacity> :
       <View style={[style.cardBody, propStyle]} >
+        {isShowBtnClose ? <TouchableOpacity
+          style={style.btnClose}
+          onPress={() => this.props.onPressClose(index)}
+        >
+          <Image source={Img.iconClose} />
+        </TouchableOpacity> : null}
         <Image style={style.image} source={img ? img : Img.imgTest} />
-        <Text style={style.tittle}>{tittle}</Text>
-        <Text style={style.subTittle}>{`Phone ${phone}`}</Text>
+        <Text
+          style={style.tittle}
+          ellipsizeMode='tail'
+          numberOfLines={1}
+        >
+          {tittle}
+        </Text>
+        <Text
+          style={style.subTittle}
+          ellipsizeMode='tail'
+          numberOfLines={1}
+        >
+          {`Phone ${phone}`}
+        </Text>
         <View style={style.viewButton}>
           <TouchableOpacity
             style={[style.button, { alignSelf: 'flex-start' }]}
@@ -58,11 +100,17 @@ export default class CardItem extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={[style.button, { alignSelf: 'flex-end' }]}
-            onPress={() => this.playSound(sound)}
+            onPress={() => {
+              this.onPressBtnVolume(sound, isPlaymp3, isShowBtnClose, index, phone, tittle, img)
+            }}
           >
-            <Image source={Img.iconVolum} />
+            <Image source={imageVolume} />
           </TouchableOpacity>
         </View>
+        <Toast
+          ref="toast"
+          position='top'
+        />
       </View >
   }
 }
@@ -126,5 +174,10 @@ const style = ScaledSheet.create({
     flexDirection: 'row',
     marginTop: 15,
     justifyContent: 'space-between'
+  },
+  btnClose: {
+    position: 'absolute',
+    top: 10,
+    right: 10
   }
 })

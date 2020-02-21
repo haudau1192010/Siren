@@ -12,5 +12,10 @@ export default {
   iconBgAvatar: require('../Asset/Image/oval@3x.png'),
   iconPen: require('../Asset/Image/iconPen.png'),
   imgTest: require('../Asset/Image/test.jpg'),
-  iconVolume: require('../Asset/Image/Orion_medium-volume.png')
+  iconVolume: require('../Asset/Image/Orion_medium-volume.png'),
+  iconPopupRate: require('../Asset/Image/Orion_dead-emoji.png'),
+  iconPenYellow: require('../Asset/Image/Orion_pencilYellow.png'),
+  iconBin: require('../Asset/Image/iconBin.png'),
+  iconClose: require('../Asset/Image/iconClose.png'),
+  iconVolumeMute: require('../Asset/Image/Orion_mute.png')
 }
